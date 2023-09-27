@@ -28,6 +28,8 @@ class Prix(models.Model):
 									# related_name="+",
 									)
 	prix = models.IntegerField()
+	
+	
 
 class Machine(models.Model):
 	nom = models.CharField(max_length=100)
@@ -35,6 +37,9 @@ class Machine(models.Model):
 	
 	def __str__(self):
 		return f"{self.nom}"
+		
+	def costs(self):
+		return self.prix
 
 class QuantiteIngredient(models.Model):
 	ingredient = models.ForeignKey(Ingredient, # ou "self",
@@ -43,8 +48,12 @@ class QuantiteIngredient(models.Model):
 									# related_name="+",
 									)
 	quantite = models.IntegerField()
+	
 	def __str__(self):
 		return f"{self.quantite} kg de {self.ingredient}"
+	
+	def costs(Prix):
+		return Prix.prix*self.quantite
 
 class Action(models.Model):
 	machine = models.ForeignKey(Machine, # ou "self",
