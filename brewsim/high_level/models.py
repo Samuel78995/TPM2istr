@@ -69,7 +69,7 @@ class Recette(models.Model):
 									# related_name="+",
 									)
 	def __str__(self):
-		return f"{self.commande}"
+		return f"{self.nom}"
 									
 class Usine(models.Model):
 	departement = models.ForeignKey(Departement, # ou "self",
