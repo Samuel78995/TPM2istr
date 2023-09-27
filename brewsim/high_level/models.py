@@ -43,6 +43,8 @@ class QuantiteIngredient(models.Model):
 									# related_name="+",
 									)
 	quantite = models.IntegerField()
+	def __str__(self):
+		return f"{self.quantite} kg de {self.ingredient}"
 
 class Action(models.Model):
 	machine = models.ForeignKey(Machine, # ou "self",
