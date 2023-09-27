@@ -6,9 +6,15 @@ from django.db import models
 class Departement(models.Model):
 	numero = models.IntegerField()
 	prixm2 = models.IntegerField()
+	
+	def __str__(self):
+		return f"departement {self.numero}"
 
 class Ingredient(models.Model):
 	nom = models.CharField(max_length=100)
+	
+	def __str__(self):
+		return f"{self.nom}"
 	
 class Prix(models.Model):
 	ingredient = models.ForeignKey(Ingredient, # ou "self",
@@ -26,6 +32,9 @@ class Prix(models.Model):
 class Machine(models.Model):
 	nom = models.CharField(max_length=100)
 	prix = models.IntegerField()
+	
+	def __str__(self):
+		return f"{self.nom}"
 
 class QuantiteIngredient(models.Model):
 	ingredient = models.ForeignKey(Ingredient, # ou "self",
@@ -49,6 +58,8 @@ class Action(models.Model):
 									blank=True, null=True,
 									related_name="+"
 									)
+	def __str__(self):
+		return f"{self.commande}"
 
 class Recette(models.Model):
 	nom = models.CharField(max_length=100)
@@ -57,6 +68,8 @@ class Recette(models.Model):
 									# blank=True, null=True,
 									# related_name="+",
 									)
+	def __str__(self):
+		return f"{self.commande}"
 									
 class Usine(models.Model):
 	departement = models.ForeignKey(Departement, # ou "self",
@@ -68,3 +81,6 @@ class Usine(models.Model):
 	machines = models.ManyToManyField(Machine)
 	recettes = models.ManyToManyField(Recette)
 	stocks = models.ManyToManyField(QuantiteIngredient)
+	
+	def __str__(self):
+		return f"Usine de {self.taille} m2"
