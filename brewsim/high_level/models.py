@@ -72,7 +72,7 @@ class Action(models.Model) :
 									blank=True, null=True,
 									related_name="+"
 									)
-	def __str__(self):
+	def __str__(self) :
 		return f"{self.commande}"
 
 class Recette(models.Model):
@@ -111,3 +111,21 @@ class Usine(models.Model):
 			prix_stocks += stock.costs(self.departement)
 		
 		return prix_usine + prix_machine + prix_stocks
+		
+	def approvisionnement(self) : 
+		# creation du dictionnaire
+		a_acheter = {}
+		for ingredient in Ingredient.objects.all() :
+			a_acheter[ingredient] = 0
+
+		# quantites requises pour chaque ingredient
+		for recette in self.recettes.all() :
+			action = recette.action
+			if action is not None :
+				for ingredient in action.ingredients.all() :
+					a_acheter[ingredient.ingredient.nom] += ingredient.quantite
+				action = action.action
+		
+		for ingredient, quantite in a_acheter.items() :		
+			self.stocks.add(QuantiteIngredient.objects.create(ingredient = ingredient, quantite = quantite)
+
