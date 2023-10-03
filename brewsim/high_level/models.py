@@ -29,6 +29,9 @@ class Prix(models.Model):
 									)
 	prix = models.IntegerField()
 	
+	def __str__(self):
+		return f"{self.ingredient} dans le {self.departement} {self.prix} euros/kg"
+	
 	
 
 class Machine(models.Model):
@@ -52,10 +55,10 @@ class QuantiteIngredient(models.Model):
 	def __str__(self):
 		return f"{self.quantite} kg de {self.ingredient}"
 	
-	def costs(Prix):
-		return Prix.prix*self.quantite
+	def costs(self,departement):
+		return self.ingredient.prix_set.get(departement__numero = departement.numero).prix * self.quantite
 
-class Action(models.Model):
+class Action(models.Model) :
 	machine = models.ForeignKey(Machine, # ou "self",
 									on_delete=models.PROTECT,
 									# blank=True, null=True,
@@ -95,3 +98,16 @@ class Usine(models.Model):
 	
 	def __str__(self):
 		return f"Usine de {self.taille} m2"
+		
+	def costs(self):
+		prix_usine = self.departement.prixm2 * self.taille
+		
+		prix_machine = 0
+		for machine in self.machines.all() :
+			prix_machine += machine.prix
+			
+		prix_stocks = 0
+		for stock in self.stocks.all() :
+			prix_stocks += stock.costs(self.departement)
+		
+		return prix_usine + prix_machine + prix_stocks
