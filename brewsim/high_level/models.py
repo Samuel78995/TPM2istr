@@ -125,7 +125,7 @@ class Usine(models.Model):
 				for ingredient in action.ingredients.all() :
 					a_acheter[ingredient.ingredient.nom] += ingredient.quantite
 				action = action.action
-		
+'''
 		for ingredient, quantite in a_acheter.items() :		
 			self.stocks.add(QuantiteIngredient.objects.create(ingredient = ingredient, quantite = quantite)
-
+'''
