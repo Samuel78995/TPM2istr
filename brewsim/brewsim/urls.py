@@ -63,6 +63,6 @@ urlpatterns = [
 	path(
 		"api/<int:pk>",
 		views.DepartementApiView.as_view(),
-		name="machine",
+		name="api",
 		),
 ]
