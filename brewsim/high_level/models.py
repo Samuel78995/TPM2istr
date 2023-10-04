@@ -9,12 +9,23 @@ class Departement(models.Model):
 	
 	def __str__(self):
 		return f"departement {self.numero}"
+		
+	def json(self) :
+		dico = {}
+		dico['numero'] = self.numero
+		dico['prixm2'] = self.prixm2
+		return dico
 
 class Ingredient(models.Model):
 	nom = models.CharField(max_length=100)
 	
 	def __str__(self):
 		return f"{self.nom}"
+		
+	def json(self) :
+		dico = {}
+		dico['nom'] = self.nom
+		return dico
 	
 class Prix(models.Model):
 	ingredient = models.ForeignKey(Ingredient, # ou "self",
@@ -31,6 +42,13 @@ class Prix(models.Model):
 	
 	def __str__(self):
 		return f"{self.ingredient} dans le {self.departement} {self.prix} euros/kg"
+		
+	def json(self) :
+		dico = {}
+		dico['ingredient'] = self.ingredient.id
+		dico['departement'] = self.departement.id
+		dico['prix'] = self.prix
+		return dico
 	
 	
 
@@ -43,6 +61,12 @@ class Machine(models.Model):
 		
 	def costs(self):
 		return self.prix
+		
+	def json(self) :
+		dico = {}
+		dico['nom'] = self.nom
+		dico['prix'] = self.prix
+		return dico
 
 class QuantiteIngredient(models.Model):
 	ingredient = models.ForeignKey(Ingredient, # ou "self",
@@ -57,6 +81,12 @@ class QuantiteIngredient(models.Model):
 	
 	def costs(self,departement):
 		return self.ingredient.prix_set.get(departement__numero = departement.numero).prix * self.quantite
+		
+	def json(self) :
+		dico = {}
+		dico['ingredient'] = self.ingredient.id
+		dico['quantite'] = self.quantite
+		return dico
 
 class Action(models.Model) :
 	machine = models.ForeignKey(Machine, # ou "self",
@@ -74,6 +104,21 @@ class Action(models.Model) :
 									)
 	def __str__(self) :
 		return f"{self.commande}"
+		
+	def json(self) :
+		dico = {}
+		dico['machine'] = self.machine.id
+		dico['commande'] = self.commande
+		dico['duree'] = self.duree
+		
+		ingredientsid = []
+		for ingredient in self.ingredients.all() :
+			ingredientsid.append(ingredient.id)
+		dico['ingredients'] = ingredientsid
+
+		if self.action is not None :
+			dico['action'] = self.action.id
+		return dico
 
 class Recette(models.Model):
 	nom = models.CharField(max_length=100)
@@ -84,6 +129,12 @@ class Recette(models.Model):
 									)
 	def __str__(self):
 		return f"{self.nom}"
+		
+	def json(self) :
+		dico = {}
+		dico['nom'] = self.nom
+		dico['action'] = self.action.idRecette
+		return dico
 									
 class Usine(models.Model):
 	departement = models.ForeignKey(Departement, # ou "self",
@@ -111,7 +162,26 @@ class Usine(models.Model):
 			prix_stocks += stock.costs(self.departement)
 		
 		return prix_usine + prix_machine + prix_stocks
-		
+
+	def json(self) :
+		dico = {}
+		dico['departement'] = self.departement.id
+		dico['taille'] = self.taille
+		#boucle
+		machinesid = []
+		for machine in self.machines.all() :
+			machinesid.append(machine.id)
+		dico['machines'] = machinesid
+
+		stocksid = []
+		for stock in self.stocks.all() :
+			stocksid.append(stock.id)
+		dico['stocks'] = stocksid
+			
+		return dico
+
+
+"""	
 	def approvisionnement(self) : 
 		# creation du dictionnaire
 		a_acheter = {}
@@ -125,7 +195,8 @@ class Usine(models.Model):
 				for ingredient in action.ingredients.all() :
 					a_acheter[ingredient.ingredient.nom] += ingredient.quantite
 				action = action.action
-'''
+
 		for ingredient, quantite in a_acheter.items() :		
 			self.stocks.add(QuantiteIngredient.objects.create(ingredient = ingredient, quantite = quantite)
-'''
+			
+"""
