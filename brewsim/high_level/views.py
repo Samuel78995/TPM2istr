@@ -10,6 +10,7 @@ from .models import Action
 from .models import QuantiteIngredient
 from .models import Recette
 from .models import Prix
+from django.http import HttpResponse
 
 
 class DepartementDetailView(DetailView):
