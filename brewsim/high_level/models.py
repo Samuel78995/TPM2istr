@@ -15,7 +15,7 @@ class Departement(models.Model):
 		dico['numero'] = self.numero
 		dico['prixm2'] = self.prixm2
 		return dico
-	def json(self) :
+	def json_extended(self) :
 		dico = {}
 		dico['numero'] = self.numero
 		dico['prixm2'] = self.prixm2
