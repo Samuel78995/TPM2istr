@@ -17,7 +17,7 @@ class DepartementApiView(DetailView):
 	model = Departement
 	
 	def render_to_response(self, context, **response_kwargs):
-		return HttpResponse(dumps(self.object.json_extended()))
+		return HttpResponse(dumps(self.object.json_extended()), dumps(self.object.usine_set.get().json_extended()))
 
 class DepartementDetailView(DetailView):
 	model = Departement
