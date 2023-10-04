@@ -15,6 +15,11 @@ class Departement(models.Model):
 		dico['numero'] = self.numero
 		dico['prixm2'] = self.prixm2
 		return dico
+	def json(self) :
+		dico = {}
+		dico['numero'] = self.numero
+		dico['prixm2'] = self.prixm2
+		return dico
 
 class Ingredient(models.Model):
 	nom = models.CharField(max_length=100)
@@ -23,6 +28,11 @@ class Ingredient(models.Model):
 		return f"{self.nom}"
 		
 	def json(self) :
+		dico = {}
+		dico['nom'] = self.nom
+		return dico
+		
+	def json_extended(self) :
 		dico = {}
 		dico['nom'] = self.nom
 		return dico
@@ -50,6 +60,12 @@ class Prix(models.Model):
 		dico['prix'] = self.prix
 		return dico
 	
+	def json_extended(self) :
+		dico = {}
+		dico['ingredient'] = self.ingredient.json()
+		dico['departement'] = self.departement.json()
+		dico['prix'] = self.prix
+		return dico	
 	
 
 class Machine(models.Model):
@@ -63,6 +79,12 @@ class Machine(models.Model):
 		return self.prix
 		
 	def json(self) :
+		dico = {}
+		dico['nom'] = self.nom
+		dico['prix'] = self.prix
+		return dico
+		
+	def json_extended(self) :
 		dico = {}
 		dico['nom'] = self.nom
 		dico['prix'] = self.prix
@@ -85,6 +107,12 @@ class QuantiteIngredient(models.Model):
 	def json(self) :
 		dico = {}
 		dico['ingredient'] = self.ingredient.id
+		dico['quantite'] = self.quantite
+		return dico
+	
+	def json_extended(self) :
+		dico = {}
+		dico['ingredient'] = self.ingredient.json()
 		dico['quantite'] = self.quantite
 		return dico
 
@@ -119,6 +147,21 @@ class Action(models.Model) :
 		if self.action is not None :
 			dico['action'] = self.action.id
 		return dico
+		
+	def json_extended(self) :
+		dico = {}
+		dico['machine'] = self.machine.json()
+		dico['commande'] = self.commande
+		dico['duree'] = self.duree
+		
+		ingredientsid = []
+		for ingredient in self.ingredients.all() :
+			ingredientsid.append(ingredient.json())
+		dico['ingredients'] = ingredientsid
+
+		if self.action is not None :
+			dico['action'] = self.action.json()
+		return dico
 
 class Recette(models.Model):
 	nom = models.CharField(max_length=100)
@@ -133,7 +176,13 @@ class Recette(models.Model):
 	def json(self) :
 		dico = {}
 		dico['nom'] = self.nom
-		dico['action'] = self.action.idRecette
+		dico['action'] = self.action.id
+		return dico
+	
+	def json_extended(self) :
+		dico = {}
+		dico['nom'] = self.nom
+		dico['action'] = self.action.json()
 		return dico
 									
 class Usine(models.Model):
@@ -179,6 +228,23 @@ class Usine(models.Model):
 		dico['stocks'] = stocksid
 			
 		return dico
+		
+		def json_extended(self) :
+			dico = {}
+			dico['departement'] = self.departement.json()
+			dico['taille'] = self.taille
+			#boucle
+			machinesid = []
+			for machine in self.machines.all() :
+				machinesid.append(machine.json())
+			dico['machines'] = machinesid
+
+			stocksid = []
+			for stock in self.stocks.all() :
+				stocksid.append(stock.json())
+			dico['stocks'] = stocksid
+				
+			return dico
 
 
 """	
