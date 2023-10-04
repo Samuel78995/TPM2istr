@@ -59,5 +59,10 @@ urlpatterns = [
 		"machine/<int:pk>",
 		views.MachineDetailView.as_view(),
 		name="machine",
-		)
+		),
+	path(
+		"api/<int:pk>",
+		views.DepartementApiView.as_view(),
+		name="machine",
+		),
 ]

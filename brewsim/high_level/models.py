@@ -229,22 +229,22 @@ class Usine(models.Model):
 			
 		return dico
 		
-		def json_extended(self) :
-			dico = {}
-			dico['departement'] = self.departement.json()
-			dico['taille'] = self.taille
-			#boucle
-			machinesid = []
-			for machine in self.machines.all() :
-				machinesid.append(machine.json())
-			dico['machines'] = machinesid
+	def json_extended(self) :
+		dico = {}
+		dico['departement'] = self.departement.json()
+		dico['taille'] = self.taille
+		#boucle
+		machinesid = []
+		for machine in self.machines.all() :
+			machinesid.append(machine.json())
+		dico['machines'] = machinesid
 
-			stocksid = []
-			for stock in self.stocks.all() :
-				stocksid.append(stock.json())
-			dico['stocks'] = stocksid
-				
-			return dico
+		stocksid = []
+		for stock in self.stocks.all() :
+			stocksid.append(stock.json())
+		dico['stocks'] = stocksid
+			
+		return dico
 
 
 """	

@@ -13,6 +13,11 @@ from .models import Prix
 from django.http import HttpResponse
 from json import dumps
 
+class DepartementApiView(DetailView):
+	model = Departement
+	
+	def render_to_response(self, context, **response_kwargs):
+		return HttpResponse(dumps(self.object.json_extended()))
 
 class DepartementDetailView(DetailView):
 	model = Departement
