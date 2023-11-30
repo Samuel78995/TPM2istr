@@ -251,10 +251,10 @@ void QuantiteIngredient::afficher()
 void Action::afficher()
 {
 	std::cout << "machine : " << this->machine_->nom_ << std::endl;
-	std::cout << "commande : " << this->commande_ << std::endl;
-	std::cout << "duree : " << this->duree_ << std::endl;
-	std::cout << "ingredients : " << this->prixm2_ << std::endl;
-	std::cout << "action : " << this->prixm2_ << std::endl;
+	//std::cout << "commande : " << this->commande_ << std::endl;
+	//std::cout << "duree : " << this->duree_ << std::endl;
+	//std::cout << "ingredients : " << this->ingredients_ << std::endl;
+	//std::cout << "action : " << this->action_ << std::endl;
 }
 /*
 void Recette::afficher()
