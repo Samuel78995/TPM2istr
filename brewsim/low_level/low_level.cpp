@@ -19,7 +19,6 @@ class Departement
 		
 		int numero_;
 		int prixm2_;
-		
 		void afficher();	
 };
 
@@ -45,60 +44,110 @@ class Ingredient
 		// Constructeur ID
 		Ingredient(int id);
 		std::string nom_;
-		
 		void afficher();
 };
+
+Ingredient::Ingredient(int id)
+{
+	std::string lien = "http://localhost:8000/ingredient/" + std::to_string(id);
+	cpr::Response r  = cpr::Get(cpr::Url(lien));
+	json fich = json::parse(r.text);
+	nom_ = fich["nom"];
+}
 
 class Prix
 {
 	public :
 		Prix(int id);
-		
 		std::unique_ptr<Ingredient> ingredient_;
 		std::unique_ptr<Departement> departement_;
 		int prix_;
-		
 		void afficher();
 		
 };
+
+Prix::Prix(int id)
+{
+	std::string lien = "http://localhost:8000/prix/" + std::to_string(id);
+	cpr::Response r  = cpr::Get(cpr::Url(lien));
+	json fich = json::parse(r.text);
+
+	ingredient_ = std::make_unique<Ingredient>(fich["ingredient"]);
+	departement_ = std::make_unique<Departement>(fich["departement"]);
+	prix_ = fich["prix"];
+}
 
 class Machine
 {
 	public :
 		Machine(int id);
-	
 		std::string nom_;
 		int prix_;
-		
 		void afficher();
-		
 };
+
+Machine::Machine(int id)
+{
+	std::string lien = "http://localhost:8000/machine/" + std::to_string(id);
+	cpr::Response r  = cpr::Get(cpr::Url(lien));
+	json fich = json::parse(r.text);
+	nom_ = fich["nom"]; prix_ = fich["prix"];
+}
 
 class QuantiteIngredient
 {
 	public :
 		QuantiteIngredient(int id);
-		
 		std::unique_ptr<Ingredient> ingredient_;
 		//std::make_unique<Ingredient>(4)
 		int quantite_;
-		
 		void afficher();
 };
+
+QuantiteIngredient::QuantiteIngredient(int id)
+{
+	std::string lien = "http://localhost:8000/quantiteingredient/" + std::to_string(id);
+	cpr::Response r  = cpr::Get(cpr::Url(lien));
+	json fich = json::parse(r.text);
+	ingredient_ = std::make_unique<Ingredient>(fich["ingredient"]);
+	quantite_ = fich["quantite"];
+}
 
 class Action
 {
 	public :
 		Action(int id);
-	
 		std::unique_ptr<Machine> machine_;
 		std::string commande_;
 		int duree_;
 		std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
 		std::optional<std::unique_ptr<Action>> action_;	
-		
 		void afficher();
+
+//	private :
+//		std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
 };
+
+Action::Action(int id)
+{
+	std::string lien = "http://localhost:8000/action/" + std::to_string(id);
+	cpr::Response r  = cpr::Get(cpr::Url(lien));
+	json fich = json::parse(r.text);
+	machine_ = std::make_unique<Machine>(fich["machine"]);
+	commande_ = fich["commande"];
+	duree_ = fich["duree"];
+//	std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
+	for (const auto &ingredient: (fich["ingredients"])) {
+		ingredients_.push_back(std::make_unique<QuantiteIngredient>(ingredient));
+	}
+
+	if (ingredients_.empty()) {
+		    std::cout << "Le conteneur 'ingredients_' est vide." << std::endl;
+		}else{
+			std::cout << "Le conteneur 'ingredients_' est PAS vide." << std::endl;
+		}
+	//action_ = std::make_unique<Action>(fich["action"]);
+}
 
 class Recette
 {
@@ -110,87 +159,26 @@ class Recette
 		void afficher();
 };
 
-class Usine
-{
-	public :
-		Usine(int id);
-	
-		std::unique_ptr<Departement> departement_;
-		int taille_;
-		std::vector<std::unique_ptr<Machine>> machines_;
-		std::vector<std::unique_ptr<Recette>> recettes_;
-		std::vector<std::unique_ptr<QuantiteIngredient>> stocks_;
-		
-		void afficher();
-};
-
-
-
-Ingredient::Ingredient(int id)
-{
-	std::string lien = "http://localhost:8000/ingredient/" + std::to_string(id);
-	cpr::Response r  = cpr::Get(cpr::Url(lien));
-	json fich = json::parse(r.text);
-	nom_ = fich["nom"];
-}
-
-Prix::Prix(int id)
-{
-	std::string lien = "http://localhost:8000/prix/" + std::to_string(id);
-	cpr::Response r  = cpr::Get(cpr::Url(lien));
-	json fich = json::parse(r.text);
-	
-	ingredient_ = std::make_unique<Ingredient>(fich["ingredient"]); 
-
-	
-	departement_ = std::make_unique<Departement>(fich["departement"]);
-	prix_ = fich["prix"];
-}
-
-Machine::Machine(int id)
-{
-	std::string lien = "http://localhost:8000/machine/" + std::to_string(id);
-	cpr::Response r  = cpr::Get(cpr::Url(lien));
-	json fich = json::parse(r.text);
-	nom_ = fich["nom"]; prix_ = fich["prix"];
-}
-
-QuantiteIngredient::QuantiteIngredient(int id)
-{
-	std::string lien = "http://localhost:8000/quantiteingredient/" + std::to_string(id);
-	cpr::Response r  = cpr::Get(cpr::Url(lien));
-	json fich = json::parse(r.text);
-	ingredient_ = std::make_unique<Ingredient>(fich["ingredient"]); 
-	quantite_ = fich["quantite"];
-}
-
-Action::Action(int id)
-{
-	std::string lien = "http://localhost:8000/action/" + std::to_string(id);
-	cpr::Response r  = cpr::Get(cpr::Url(lien));
-	json fich = json::parse(r.text);
-	machine_ = std::make_unique<Machine>(fich["machine"]); 
-	commande_ = fich["commande"];
-	duree_ = fich["duree"];
-
-	std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
-
-	for (const auto &ingredient: (fich["ingredients"])) {
-		ingredients_.push_back(std::make_unique<QuantiteIngredient>(ingredient));
-	}
-	
-	action_ = std::make_unique<Action>(fich["action"]);
-}
-
 Recette::Recette(int id)
 {
 	std::string lien = "http://localhost:8000/recette/" + std::to_string(id);
 	cpr::Response r  = cpr::Get(cpr::Url(lien));
 	json fich = json::parse(r.text);
-	
 	nom_ = fich["nom"];
 	action_ = std::make_unique<Action>(fich["action"]);
 }
+
+class Usine
+{
+	public :
+		Usine(int id);
+		std::unique_ptr<Departement> departement_;
+		int taille_;
+		std::vector<std::unique_ptr<Machine>> machines_;
+		std::vector<std::unique_ptr<Recette>> recettes_;
+		std::vector<std::unique_ptr<QuantiteIngredient>> stocks_;
+		void afficher();
+};
 
 Usine::Usine(int id)
 {
@@ -213,7 +201,7 @@ Usine::Usine(int id)
 }
 
 
-//Affichage
+// Fonctions d'Affichage
 void Departement::afficher()
 {
 	std::cout << "numero : " << this->numero_ << std::endl;
@@ -225,14 +213,12 @@ void Ingredient::afficher()
 	std::cout << "nom : " << this->nom_ << std::endl;
 }
 
-
 void Prix::afficher()
 {
 	std::cout << "ingredient : " << this->ingredient_->nom_ << std::endl;
-	std::cout << " departement : " << this->departement_->numero_ << std::endl;
-	std::cout << " prix : " << this->prix_ << std::endl;
+	std::cout << "departement : " << this->departement_->numero_ << std::endl;
+	std::cout << "prix : " << this->prix_ << std::endl;
 }
-
 
 void Machine::afficher()
 {
@@ -246,14 +232,23 @@ void QuantiteIngredient::afficher()
 	std::cout << "quantite : " << this->quantite_ << std::endl;
 }
 
-
-
 void Action::afficher()
 {
 	std::cout << "machine : " << this->machine_->nom_ << std::endl;
-	//std::cout << "commande : " << this->commande_ << std::endl;
-	//std::cout << "duree : " << this->duree_ << std::endl;
+	std::cout << "commande : " << this->commande_ << std::endl;
+	std::cout << "duree : " << this->duree_ << std::endl;
 	//std::cout << "ingredients : " << this->ingredients_ << std::endl;
+	std::cout << "ingredients : ";
+
+	if (this->ingredients_.empty()) {
+	    std::cout << "Le conteneur 'ingredients_' est vide." << std::endl;
+	}
+
+	for (const auto &ingredient: this->ingredients_ ){
+		std::cout << "Debut\n";
+		std::cout << ingredient->ingredient_->nom_ << std::endl;
+		std::cout << "Fin\n";
+	}
 	//std::cout << "action : " << this->action_ << std::endl;
 }
 /*
@@ -268,8 +263,9 @@ void Usine::afficher()
 	std::cout << "numero : " << this->numero_ << std::endl;
 	std::cout << "prixm2 : " << this->prixm2_ << std::endl;
 }
-
 */
+
+
 int main()
 {
 	/*
@@ -298,29 +294,41 @@ int main()
     dep3.afficher();
     */
     
-    //Departement dep(1);
-    //dep.afficher();
+
+
+	// TEST DES CONTRUCTEURS ET DES METHODES D'AFFICHAGE
+	std::cout << "---------------------------------" << std::endl;
+	std::cout << "CLASSE DEPARTEMENT :" << std::endl;
+	Departement dep(1);
+	dep.afficher();
     std::cout << "---------------------------------" << std::endl;
+    std::cout << "CLASSE INGREDIENT :" << std::endl;
     Ingredient ing(1);
     ing.afficher();
-    
     std::cout << "---------------------------------" << std::endl;
+    std::cout << "CLASSE PRIX :" << std::endl;
     Prix p(1);
     p.afficher();
-    
     std::cout << "---------------------------------" << std::endl;
+    std::cout << "CLASSE MACHINE :" << std::endl;
     Machine m(1);
     m.afficher();
-    
     std::cout << "---------------------------------" << std::endl;
+    std::cout << "CLASSE QUANTITE INGREDIENT :" << std::endl;
     QuantiteIngredient qi(3);
     qi.afficher();
-    
     std::cout << "---------------------------------" << std::endl;
-    Action a(1);
+    std::cout << "CLASSE ACTION :" << std::endl;
+    Action a(4);
+
     a.afficher();
+//    if (a.ingredients_.empty()) {
+//    		    std::cout << "Le conteneur 'ingredients_' est vide." << std::endl;
+//    		}else{
+//    			std::cout << "Le conteneur 'ingredients_' est PAS vide." << std::endl;
+//    		}
     
-    
+    //Usine u(1);
 	return 0;
 }
 
