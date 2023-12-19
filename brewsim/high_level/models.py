@@ -24,7 +24,7 @@ class Departement(models.Model):
 class Ingredient(models.Model):
 	nom = models.CharField(max_length=100)
 	
-	def __str__(self):
+	def __str__(self) :
 		return f"{self.nom}"
 		
 	def json(self) :
@@ -65,7 +65,7 @@ class Prix(models.Model):
 		dico['ingredient'] = self.ingredient.json()
 		dico['departement'] = self.departement.json()
 		dico['prix'] = self.prix
-		return dico	
+		return dico
 	
 
 class Machine(models.Model):

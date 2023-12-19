@@ -121,11 +121,8 @@ class Action
 		std::string commande_;
 		int duree_;
 		std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
-		std::optional<std::unique_ptr<Action>> action_;	
+		std::optional<std::unique_ptr<Action>> action_;
 		void afficher();
-
-//	private :
-//		std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
 };
 
 Action::Action(int id)
@@ -140,13 +137,7 @@ Action::Action(int id)
 	for (const auto &ingredient: (fich["ingredients"])) {
 		ingredients_.push_back(std::make_unique<QuantiteIngredient>(ingredient));
 	}
-
-	if (ingredients_.empty()) {
-		    std::cout << "Le conteneur 'ingredients_' est vide." << std::endl;
-		}else{
-			std::cout << "Le conteneur 'ingredients_' est PAS vide." << std::endl;
-		}
-	//action_ = std::make_unique<Action>(fich["action"]);
+//	action_ = std::make_unique<Action>(fich["action"]);
 }
 
 class Recette
@@ -154,8 +145,7 @@ class Recette
 	public :
 		Recette(int id);
 		std::string nom_;
-		std::unique_ptr<Action> action_;	
-		
+		std::unique_ptr<Action> action_;
 		void afficher();
 };
 
@@ -237,34 +227,47 @@ void Action::afficher()
 	std::cout << "machine : " << this->machine_->nom_ << std::endl;
 	std::cout << "commande : " << this->commande_ << std::endl;
 	std::cout << "duree : " << this->duree_ << std::endl;
-	//std::cout << "ingredients : " << this->ingredients_ << std::endl;
 	std::cout << "ingredients : ";
-
-	if (this->ingredients_.empty()) {
-	    std::cout << "Le conteneur 'ingredients_' est vide." << std::endl;
-	}
-
 	for (const auto &ingredient: this->ingredients_ ){
-		std::cout << "Debut\n";
-		std::cout << ingredient->ingredient_->nom_ << std::endl;
-		std::cout << "Fin\n";
+		std::cout << ingredient->ingredient_->nom_ << " (" << ingredient->quantite_ << ") \t" ;
 	}
-	//std::cout << "action : " << this->action_ << std::endl;
+	std::cout << "\n";
+//	std::cout << "action : " << this->action_ << std::endl;
 }
-/*
+
 void Recette::afficher()
 {
-	std::cout << "numero : " << this->numero_ << std::endl;
-	std::cout << "prixm2 : " << this->prixm2_ << std::endl;
+	std::cout << "nom : " << this->nom_ << std::endl;
+	std::cout << "action : " << this->action_->commande_ << std::endl;
 }
 
 void Usine::afficher()
 {
-	std::cout << "numero : " << this->numero_ << std::endl;
-	std::cout << "prixm2 : " << this->prixm2_ << std::endl;
-}
-*/
+	std::cout << "departement : " << this->departement_->numero_ << std::endl;
+	std::cout << "taille : " << this->taille_ << std::endl;
+	std::cout << "machines : ";
+	for (const auto &machine: this->machines_ ){
+		std::cout << machine->nom_ << "\t" ;
+	}
+	std::cout << "\n";
+	std::cout << "recettes : ";
+	for (const auto &recette: this->recettes_ ){
+		std::cout << recette->nom_ << "\t" ;
+	}
+	std::cout << "\n";
+	std::cout << "stocks : ";
+	for (const auto &stock: this->stocks_ ){
+		std::cout << stock->ingredient_->nom_ << "\t" ;
+	}
+	std::cout << "\n";
 
+}
+
+std::unique_ptr<Departement> departement_;
+int taille_;
+std::vector<std::unique_ptr<Machine>> machines_;
+std::vector<std::unique_ptr<Recette>> recettes_;
+std::vector<std::unique_ptr<QuantiteIngredient>> stocks_;
 
 int main()
 {
@@ -320,15 +323,16 @@ int main()
     std::cout << "---------------------------------" << std::endl;
     std::cout << "CLASSE ACTION :" << std::endl;
     Action a(4);
-
     a.afficher();
-//    if (a.ingredients_.empty()) {
-//    		    std::cout << "Le conteneur 'ingredients_' est vide." << std::endl;
-//    		}else{
-//    			std::cout << "Le conteneur 'ingredients_' est PAS vide." << std::endl;
-//    		}
-    
-    //Usine u(1);
-	return 0;
+    std::cout << "---------------------------------" << std::endl;
+    std::cout << "CLASSE RECETTE :" << std::endl;
+    Recette r(1);
+    r.afficher();
+    std::cout << "---------------------------------" << std::endl;
+    std::cout << "CLASSE USINE :" << std::endl;
+    Usine u(2);
+    u.afficher();
+
+    return 0;
 }
 
