@@ -17,13 +17,7 @@ class DepartementApiView(DetailView):
 	model = Departement
 	
 	def render_to_response(self, context, **response_kwargs):
-		dico = []
-		#dico = self.object.json_extended()
-		dico[1] = self.object.json_extended()
-		#dico[2] = self.object.usine_set.get().json_extended()
-		dico[2] = self.usine_set.get().object.json_extended()
-		
-		return HttpResponse(dumps(dico))
+		return HttpResponse(dumps(self.object.usine_set.get().json_extended()))
 
 class DepartementDetailView(DetailView):
 	model = Departement

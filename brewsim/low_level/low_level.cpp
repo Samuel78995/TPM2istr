@@ -277,7 +277,6 @@ int main()
 
 
     std::cout << "---------------------------------" << std::endl;
-    // LE CONSTRUCTEUR JSON A ETE COMMENTE CAR CONFLIT AVEC LE CONSTRUTEUR ID POUR LA SUITE
     std::cout << "Constructeur avec JSON :" << std::endl;
     Departement dep2(ex1);
     dep2.afficher();

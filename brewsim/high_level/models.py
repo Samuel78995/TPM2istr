@@ -2,7 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-
 class Departement(models.Model):
 	numero = models.IntegerField()
 	prixm2 = models.IntegerField()
@@ -160,7 +159,7 @@ class Action(models.Model) :
 		dico['ingredients'] = ingredientsid
 
 		if self.action is not None :
-			dico['action'] = self.action.json()
+			dico['action'] = self.action.json_extended()
 		return dico
 
 class Recette(models.Model):
@@ -221,7 +220,12 @@ class Usine(models.Model):
 		for machine in self.machines.all() :
 			machinesid.append(machine.id)
 		dico['machines'] = machinesid
-
+		
+		recettesid = []
+		for recette in self.recettes.all() :
+			recettesid.append(recette.id)
+		dico['recettes'] = recettesid
+		
 		stocksid = []
 		for stock in self.stocks.all() :
 			stocksid.append(stock.id)
@@ -231,17 +235,22 @@ class Usine(models.Model):
 		
 	def json_extended(self) :
 		dico = {}
-		dico['departement'] = self.departement.json()
+		dico['departement'] = self.departement.json_extended()
 		dico['taille'] = self.taille
 		#boucle
 		machinesid = []
 		for machine in self.machines.all() :
-			machinesid.append(machine.json())
+			machinesid.append(machine.json_extended())
 		dico['machines'] = machinesid
-
+		
+		recettesid = []
+		for recette in self.recettes.all() :
+			recettesid.append(recette.json_extended())
+		dico['recettes'] = recettesid
+		
 		stocksid = []
 		for stock in self.stocks.all() :
-			stocksid.append(stock.json())
+			stocksid.append(stock.json_extended())
 		dico['stocks'] = stocksid
 			
 		return dico

@@ -15,6 +15,8 @@ class MachineModelTests(TestCase):
 		Machine.objects.create(nom="four",prix=1_000)
 		self.assertEqual(Machine.objects.count(), 1)
 '''
+
+### ECRIRE UN TEST UNITAIRE ###
 class MachineModelTests(TestCase):
 	def test_usine_creation(self):
 		dep = Departement.objects.create(numero = 31, prixm2 = 2000)
