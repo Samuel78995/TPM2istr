@@ -10,13 +10,11 @@ class Departement
 	public :
 		// Constructeur
 		Departement(int numero, int prixm2);
-		
 		// Constructeur JSON
-		//Departement(json fich);
+		Departement(json fich);
 		
 		// Constructeur ID
 		Departement(int id);
-		
 		int numero_;
 		int prixm2_;
 		void afficher();	
@@ -26,8 +24,8 @@ class Departement
 Departement::Departement(int numero, int prixm2) : numero_(numero), prixm2_(prixm2)
 {}
 // Constructeur JSON
-//Departement::Departement(json fich) : numero_(fich["numero"]), prixm2_(fich["prixm2"])
-//{}
+Departement::Departement(json fich) : numero_(fich["numero"]), prixm2_(fich["prixm2"])
+{}
 // Constructeur ID
 Departement::Departement(int id)
 {
@@ -63,7 +61,6 @@ class Prix
 		std::unique_ptr<Departement> departement_;
 		int prix_;
 		void afficher();
-		
 };
 
 Prix::Prix(int id)
@@ -73,7 +70,7 @@ Prix::Prix(int id)
 	json fich = json::parse(r.text);
 
 	ingredient_ = std::make_unique<Ingredient>(fich["ingredient"]);
-	departement_ = std::make_unique<Departement>(fich["departement"]);
+	departement_ = std::make_unique<Departement>(static_cast<int>(fich["departement"])); // cast en int pour resoudre conflit avec le const JSON
 	prix_ = fich["prix"];
 }
 
@@ -133,7 +130,6 @@ Action::Action(int id)
 	machine_ = std::make_unique<Machine>(fich["machine"]);
 	commande_ = fich["commande"];
 	duree_ = fich["duree"];
-//	std::vector<std::unique_ptr<QuantiteIngredient>> ingredients_;
 	for (const auto &ingredient: (fich["ingredients"])) {
 		ingredients_.push_back(std::make_unique<QuantiteIngredient>(ingredient));
 	}
@@ -176,15 +172,15 @@ Usine::Usine(int id)
 	cpr::Response r  = cpr::Get(cpr::Url(lien));
 	json fich = json::parse(r.text);
 	
-	departement_ = std::make_unique<Departement>(fich["departement"]);
+	departement_ = std::make_unique<Departement>(static_cast<int>(fich["departement"])); // cast en int pour resoudre conflit avec le const JSON
 	taille_ = fich["taille"];
 	
-	std::vector<std::unique_ptr<Machine>> machines_;
 	for (const auto &machine : (fich["machines"])) {
 		machines_.push_back(std::make_unique<Machine>(machine));
 	}
-	
-	std::vector<std::unique_ptr<QuantiteIngredient>> stocks_;
+	for (const auto &recette : (fich["recettes"])) {
+		recettes_.push_back(std::make_unique<Recette>(recette));
+	}
 	for (const auto &stock : (fich["stocks"])) {
 		stocks_.push_back(std::make_unique<QuantiteIngredient>(stock));
 	}
@@ -232,7 +228,6 @@ void Action::afficher()
 		std::cout << ingredient->ingredient_->nom_ << " (" << ingredient->quantite_ << ") \t" ;
 	}
 	std::cout << "\n";
-//	std::cout << "action : " << this->action_ << std::endl;
 }
 
 void Recette::afficher()
@@ -260,44 +255,36 @@ void Usine::afficher()
 		std::cout << stock->ingredient_->nom_ << "\t" ;
 	}
 	std::cout << "\n";
-
 }
 
-std::unique_ptr<Departement> departement_;
-int taille_;
-std::vector<std::unique_ptr<Machine>> machines_;
-std::vector<std::unique_ptr<Recette>> recettes_;
-std::vector<std::unique_ptr<QuantiteIngredient>> stocks_;
 
 int main()
 {
-	/*
-	Departement dep(81, 2000);
-	dep.afficher();*/
-	/*
+	// Création d'un departement
+	std::cout << "Création d'un departement et affichage :" << std::endl;
+	Departement department(81, 2000);
+	department.afficher();
+
 	// REQUETE HTTP
-	cpr::Response r  = cpr::Get(cpr::Url("http://localhost:8000/action/1"));
-	//std::cout << r.status_code << "\n";
-	std::cout << "Reponse HTTP :" << std::endl;
-    std::cout << r.text << "\n";     // JSON text string
-    
+	cpr::Response resp  = cpr::Get(cpr::Url("http://localhost:8000/departement/1"));
+	//std::cout << resp.status_code << "\n";
+	std::cout << "\nReponse HTTP (sur departement) :" << std::endl;
+    std::cout << resp.text << "\n";     // JSON text string
     // JSON PARSE
-    json ex1 = json::parse(r.text);
+    json ex1 = json::parse(resp.text);
     std::cout << "Le JSON :" << std::endl;
     std::cout << ex1 << "\n";
-    */
-    /*
+
+
     std::cout << "---------------------------------" << std::endl;
+    // LE CONSTRUCTEUR JSON A ETE COMMENTE CAR CONFLIT AVEC LE CONSTRUTEUR ID POUR LA SUITE
     std::cout << "Constructeur avec JSON :" << std::endl;
-    Action dep2(ex1);
+    Departement dep2(ex1);
     dep2.afficher();
     
     std::cout << "Constructeur avec ID :" << std::endl;
-	Action dep3(1);
+    Departement dep3(1);
     dep3.afficher();
-    */
-    
-
 
 	// TEST DES CONTRUCTEURS ET DES METHODES D'AFFICHAGE
 	std::cout << "---------------------------------" << std::endl;
